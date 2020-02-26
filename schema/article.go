@@ -77,8 +77,103 @@ var rootQuery = graphql.NewObject(graphql.ObjectConfig{
 	},
 })
 
+// 定义mutation,增删改操作
+// add
+var addArticle = graphql.Field{
+	Name:        "新文章",
+	Description: "增加新文章",
+	Type:        articleType,
+	Args: graphql.FieldConfigArgument{
+		"title": &graphql.ArgumentConfig{
+			Type: graphql.String,
+		},
+		"content": &graphql.ArgumentConfig{
+			Type: graphql.String,
+		},
+	},
+	Resolve: func(p graphql.ResolveParams) (result interface{}, err error) {
+		title, _ := p.Args["title"].(string)
+		content, _ := p.Args["content"].(string)
+
+		result, err = models.CreateNewArticle(title, content)
+		if err != nil {
+			return nil, err
+		}
+
+		return result, nil
+	},
+}
+
+// update
+var updateArticle = graphql.Field{
+	Name:        "编辑文章",
+	Description: "编辑文章",
+	Type:        articleType,
+	Args: graphql.FieldConfigArgument{
+		"id": &graphql.ArgumentConfig{
+			Type: graphql.Int,
+		},
+		"title": &graphql.ArgumentConfig{
+			Type: graphql.String,
+		},
+		"content": &graphql.ArgumentConfig{
+			Type: graphql.String,
+		},
+	},
+	Resolve: func(p graphql.ResolveParams) (result interface{}, err error) {
+		id, _ := p.Args["id"].(int)
+		title, _ := p.Args["title"].(string)
+		content, _ := p.Args["content"].(string)
+
+		result, err = models.UpdateArticle(id, title, content)
+		if err != nil {
+			return nil, err
+		}
+
+		return result, nil
+	},
+}
+
+// delete
+var deleteArticle = graphql.Field{
+	Name:        "删除文章",
+	Description: "删除指定Id的文章",
+	Type:        articleType,
+	Args: graphql.FieldConfigArgument{
+		"id": &graphql.ArgumentConfig{
+			Type: graphql.Int,
+		},
+	},
+	Resolve: func(p graphql.ResolveParams) (result interface{}, err error) {
+		id, _ := p.Args["id"].(int)
+
+		// 查找文章是否存在
+		result, err = models.GetArticleByID(id)
+		if err != nil {
+			return nil, err
+		}
+
+		if err = models.DeleteArticle(id); err != nil {
+			return nil, err
+		}
+
+		return result, nil
+	},
+}
+
+// 定义增删改方法
+var mutationType = graphql.NewObject(graphql.ObjectConfig{
+	Name:        "mutation",
+	Description: "增删改",
+	Fields: graphql.Fields{
+		"add":    &addArticle,
+		"update": &updateArticle,
+		"delete": &deleteArticle,
+	},
+})
+
 // 定义Schema用于http handler处理
 var Schema, _ = graphql.NewSchema(graphql.SchemaConfig{
 	Query:    rootQuery,
-	Mutation: nil,
+	Mutation: mutationType,
 })
