@@ -1,9 +1,21 @@
+# vscode
+.vscode
+
+# vim
+*.swp
+
+# Windows:
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
 # Binaries for programs and plugins
 *.exe
 *.exe~
 *.dll
 *.so
 *.dylib
+__debug_bin
 
 # Test binary, built with `go test -c`
 *.test
