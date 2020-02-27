@@ -42,19 +42,18 @@ func CreateNewArticle(title, content string) (*Article, error) {
 
 // Update a article
 func UpdateArticle(id int, title, content string) (*Article, error) {
-	a, err := GetArticleByID(id)
-	if err != nil {
-		return nil, err
+	for k, _ := range articleList {
+		if articleList[k].ID == id {
+			if title != "" {
+				articleList[k].Title = title
+			}
+			if content != "" {
+				articleList[k].Content = content
+			}
+			return &articleList[k], nil
+		}
 	}
-
-	if title != "" {
-		a.Title = title
-	}
-	if content != "" {
-		a.Content = content
-	}
-
-	return a, nil
+	return nil, errors.New("Article not found")
 }
 
 // Delete a article

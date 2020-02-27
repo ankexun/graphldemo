@@ -5,15 +5,19 @@ import (
 	"graphqldemo/schema"
 	"net/http"
 
+	"github.com/rs/cors"
+
 	"github.com/graphql-go/handler"
 )
 
 // main
 func main() {
 	h := Register()
-	http.Handle("/graphql", h)
-	fmt.Println("Now server is running on port 8080")
-	http.ListenAndServe(":8080", nil)
+	// 解决跨域的问题
+	hdl := cors.Default().Handler(h)
+	http.Handle("/graphql", hdl)
+	fmt.Println("Now server is running on port 9090")
+	http.ListenAndServe(":9090", nil)
 }
 
 // 初始化handler
