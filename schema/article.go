@@ -3,6 +3,7 @@ package schema
 import (
 	"errors"
 	"graphqldemo/models"
+	"graphqldemo/utils"
 
 	"github.com/graphql-go/graphql"
 )
@@ -24,6 +25,7 @@ var articleType = graphql.NewObject(graphql.ObjectConfig{
 	},
 })
 
+// 定义query
 // 处理查询请求,获取文章列表
 var queryArticles = graphql.Field{
 	Name:        "QueryArticles",
@@ -55,6 +57,12 @@ var queryArticle = graphql.Field{
 	Resolve: func(p graphql.ResolveParams) (result interface{}, err error) {
 		// Args里面定义的字段在p.Args里面，对应的取出来
 		// 因为是interface{}的值，需要类型转换
+		err = utils.ValidateJWT(p.Context.Value("token").(string))
+		// log.Println(p.Context.Value("token"))
+		if err != nil {
+			return nil, err
+		}
+
 		id, ok := p.Args["id"].(int)
 		if !ok {
 			return nil, errors.New("missing required arguments: id. ")
@@ -62,20 +70,9 @@ var queryArticle = graphql.Field{
 
 		result, err = models.GetArticleByID(id)
 
-		// 调用Hello这个model里面的Query方法查询数据
 		return result, err
 	},
 }
-
-// 定义根查询节点及各种查询
-var rootQuery = graphql.NewObject(graphql.ObjectConfig{
-	Name:        "RootQuery",
-	Description: "Root Query",
-	Fields: graphql.Fields{
-		"articles": &queryArticles, //分别对应前面定义的query
-		"article":  &queryArticle,
-	},
-})
 
 // 定义mutation,增删改操作
 // add
@@ -160,20 +157,3 @@ var deleteArticle = graphql.Field{
 		return result, nil
 	},
 }
-
-// 定义增删改方法
-var mutationType = graphql.NewObject(graphql.ObjectConfig{
-	Name:        "mutation",
-	Description: "增删改",
-	Fields: graphql.Fields{
-		"add":    &addArticle,
-		"update": &updateArticle,
-		"delete": &deleteArticle,
-	},
-})
-
-// 定义Schema用于http handler处理
-var Schema, _ = graphql.NewSchema(graphql.SchemaConfig{
-	Query:    rootQuery,
-	Mutation: mutationType,
-})
