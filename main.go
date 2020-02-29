@@ -7,6 +7,8 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/rs/cors"
+
 	"github.com/graphql-go/handler"
 )
 
@@ -14,29 +16,35 @@ import (
 func main() {
 	h := Register()
 
-	http.HandleFunc("/graphql", func(w http.ResponseWriter, r *http.Request) {
-		ctx := context.Background()
-		ctx = context.WithValue(ctx, "token", r.Header.Get("token"))
-
-		// 解决跨域的问题
-		w.Header().Set("Access-Control-Allow-Origin", "*")             //允许访问所有域
-		w.Header().Add("Access-Control-Allow-Headers", "Content-Type") //header的类型
-		// w.Header().Set("content-type", "application/json")             //返回数据格式是json
-
-		h.ContextHandler(ctx, w, r)
+	// 跨域
+	c := cors.New(cors.Options{
+		AllowedOrigins:   []string{"http://localhost:8080"},
+		AllowedHeaders:   []string{"*"},
+		AllowCredentials: true,
+		// Debug:            true,
 	})
+
+	http.Handle("/graphql", c.Handler(h))
 	http.HandleFunc("/login", utils.CreateTokenEndpoint)
 	log.Println("Now server is running on port 9090")
 	log.Fatal(http.ListenAndServe(":9090", nil))
 }
 
 // 初始化handler
-func Register() *handler.Handler {
+func Register() http.Handler {
 	h := handler.New(&handler.Config{
 		Schema:     &schema.Schema,
 		Pretty:     true,
 		GraphiQL:   false,
 		Playground: true,
 	})
-	return h
+
+	// token传参
+	hdl := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		ctx := context.Background()
+		ctx = context.WithValue(ctx, "token", r.Header.Get("token"))
+		h.ContextHandler(ctx, w, r)
+	})
+
+	return hdl
 }

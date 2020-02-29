@@ -1,9 +1,9 @@
 import gql from 'graphql-tag'
-import apolloClient from '../utils/apollo'
+import {apolloClient,baseClient} from '../utils/apollo'
 
 // 文章列表
 export function getArticles(params) {
- return apolloClient.query({
+ return baseClient.query({  //不需要带上token
   query: gql `{
    articles{
     id
@@ -17,7 +17,7 @@ export function getArticles(params) {
 
 // 单篇文章详情
 export function getArticle(params) {
-  return apolloClient.query({
+  return apolloClient.query({ //需要带上token
     query: gql `query ($id : Int) {
       article(id: $id) {
         id
