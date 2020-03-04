@@ -2,12 +2,13 @@ package utils
 
 import (
 	"errors"
+	"graphqldemo/service/config"
 	"time"
 
 	jwt "github.com/dgrijalva/jwt-go"
 )
 
-var jwtSecret = []byte("graphqldemo")
+var jwtSecret = []byte(config.AppSetting.JwtSecret)
 
 type Claims struct {
 	Username string `json:"username"`

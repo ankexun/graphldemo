@@ -1,9 +1,13 @@
 import Vue from 'vue'
 import VueApollo from 'vue-apollo'
 import {apolloClient,baseClient} from './utils/apollo'
-import App from './App.vue'
+import App from './App'
+
+import store from './store'
 
 Vue.config.productionTip = false
+
+Vue.prototype.$store = store
 
 const apolloProvider = new VueApollo({
     clients: {
@@ -12,9 +16,12 @@ const apolloProvider = new VueApollo({
     },
     defaultClient: baseClient  //默认请求路径，如果只有一个请求就使用这个就行
   })
-  
-// Vue.use(VueApollo)
-new Vue({
-  apolloProvider,
-  render: h => h(App),
-}).$mount('#app')
+
+App.mpType = 'app'
+
+const app = new Vue({
+    store,
+    apolloProvider,
+	...App
+})
+app.$mount()

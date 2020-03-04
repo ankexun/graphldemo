@@ -1,0 +1,38 @@
+app:
+  jwtSecret: 299792.458
+server:
+  host: 127.0.0.1
+  httpPort: 9090
+  readTimeout: 60
+  writeTimeout: 60
+  # cors
+  # 两种表示数组的方式,* 必须要用引号才能输入
+  allowedOrigins: [http://localhost:8080]
+  allowedHeaders: 
+  - '*'
+database:
+  # read
+  read:
+    type: mysql
+    host: 127.0.0.1
+    port: 3306
+    user: rbac
+    password: 123456
+    name: rbac_db
+    encoding: utf8mb4
+  # write
+  write:
+    type: mysql
+    host: 127.0.0.1
+    port: 3306
+    user: rbac
+    password: 123456
+    name: rbac_db
+    encoding: utf8mb4
+# redis config
+redis:
+  host: 127.0.0.1:6379
+  password: 3.1415926
+  maxIdle: 30
+  maxActive: 30
+  idleTimeout: 200

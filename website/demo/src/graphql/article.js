@@ -5,7 +5,7 @@ import {apolloClient,baseClient} from '../utils/apollo'
 export function getArticles(params) {
  return baseClient.query({  //不需要带上token
   query: gql `{
-   articles{
+   queryArticles{
     id
     title
     content
@@ -19,7 +19,7 @@ export function getArticles(params) {
 export function getArticle(params) {
   return apolloClient.query({ //需要带上token
     query: gql `query ($id : Int) {
-      article(id: $id) {
+      getArticle(id: $id) {
         id
         title
         content
@@ -33,7 +33,7 @@ export function getArticle(params) {
 export function createArticle(params) {
  return apolloClient.mutate({
   mutation: gql `mutation ($title: String, $content: String) {
-   add(title: $title, content: $content){
+   addArticle(title: $title, content: $content){
     id
     title
     content
@@ -47,7 +47,7 @@ export function createArticle(params) {
 export function editArticle(params) {
   return apolloClient.mutate({
    mutation: gql `mutation ($id: Int, $title: String, $content: String) {
-    update(id: $id, title: $title, content: $content){
+    editArticle(id: $id, title: $title, content: $content){
      id
      title
      content
@@ -61,7 +61,7 @@ export function editArticle(params) {
 export function deleteArticle(params) {
   return apolloClient.mutate({
    mutation: gql `mutation ($id: Int) {
-    delete(id: $id){
+    deleteArticle(id: $id){
      id
      title
      content

@@ -1,50 +1,57 @@
 package main
 
 import (
-	"context"
+	"fmt"
+	"graphqldemo/models"
 	"graphqldemo/schema"
 	"graphqldemo/utils"
 	"log"
 	"net/http"
 
-	"github.com/rs/cors"
+	"graphqldemo/service/config"
 
-	"github.com/graphql-go/handler"
+	"github.com/rs/cors"
 )
+
+// 初始化配置
+func init() {
+	config.Setup()
+	models.Setup()
+}
 
 // main
 func main() {
-	h := Register()
+	mux := http.NewServeMux()
+
+	h := schema.Register()
 
 	// 跨域
 	c := cors.New(cors.Options{
-		AllowedOrigins:   []string{"http://localhost:8080"},
-		AllowedHeaders:   []string{"*"},
+		// AllowedOrigins:   []string{"http://localhost:8080"},
+		// AllowedHeaders: []string{"*"},
+		AllowedOrigins:   config.ServerSetting.AllowedOrigins,
+		AllowedHeaders:   config.ServerSetting.AllowedHeaders,
 		AllowCredentials: true,
 		// Debug:            true,
 	})
 
-	http.Handle("/graphql", c.Handler(h))
-	http.HandleFunc("/login", utils.CreateTokenEndpoint)
-	log.Println("Now server is running on port 9090")
-	log.Fatal(http.ListenAndServe(":9090", nil))
-}
+	mux.Handle("/graphql", c.Handler(h))
+	mux.HandleFunc("/login", utils.CreateTokenEndpoint)
 
-// 初始化handler
-func Register() http.Handler {
-	h := handler.New(&handler.Config{
-		Schema:     &schema.Schema,
-		Pretty:     true,
-		GraphiQL:   false,
-		Playground: true,
-	})
+	readTimeout := config.ServerSetting.ReadTimeout
+	writeTimeout := config.ServerSetting.WriteTimeout
+	endPoint := fmt.Sprintf("%s:%d", config.ServerSetting.Host, config.ServerSetting.HttpPort)
+	maxHeaderBytes := 1 << 20
 
-	// token传参
-	hdl := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		ctx := context.Background()
-		ctx = context.WithValue(ctx, "token", r.Header.Get("token"))
-		h.ContextHandler(ctx, w, r)
-	})
+	server := &http.Server{
+		Addr:           endPoint,
+		Handler:        mux,
+		ReadTimeout:    readTimeout,
+		WriteTimeout:   writeTimeout,
+		MaxHeaderBytes: maxHeaderBytes,
+	}
 
-	return hdl
+	log.Printf("[info] start http server listening %s", endPoint)
+
+	log.Fatal(server.ListenAndServe())
 }

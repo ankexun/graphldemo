@@ -53,7 +53,7 @@ export default {
       getArticles()
       .then(res=>{
         console.log('request success')
-        this.list = res.data.articles
+        this.list = res.data.queryArticles
       })
       .catch(err=>{
         console.log(err)
@@ -62,7 +62,7 @@ export default {
     getArticle(id) {
       getArticle({id:id})
       .then(res =>{
-        this.article = res.data.article
+        this.article = res.data.getArticle
       })
       .catch(err =>{
         console.log(err)

@@ -4,6 +4,7 @@ import (
 	"errors"
 	"graphqldemo/models"
 	"graphqldemo/utils"
+	"log"
 
 	"github.com/graphql-go/graphql"
 )
@@ -34,6 +35,8 @@ var queryArticles = graphql.Field{
 	// 无需处理参数
 	// Resolve是一个处理请求的函数，具体处理逻辑可在此进行
 	Resolve: func(p graphql.ResolveParams) (result interface{}, err error) {
+		log.Println(p.Info.FieldName)
+		log.Println(p.Info.Operation.GetOperation())
 		// 调用Article的models里面的方法查询数据
 		result = models.GetAllArticles()
 
@@ -57,6 +60,7 @@ var queryArticle = graphql.Field{
 	Resolve: func(p graphql.ResolveParams) (result interface{}, err error) {
 		// Args里面定义的字段在p.Args里面，对应的取出来
 		// 因为是interface{}的值，需要类型转换
+		log.Println(p.Info.FieldName)
 		err = utils.ValidateJWT(p.Context.Value("token").(string))
 		// log.Println(p.Context.Value("token"))
 		if err != nil {
@@ -89,6 +93,8 @@ var addArticle = graphql.Field{
 		},
 	},
 	Resolve: func(p graphql.ResolveParams) (result interface{}, err error) {
+		log.Println(p.Info.FieldName)
+		log.Println(p.Info.Operation.GetOperation())
 		title, _ := p.Args["title"].(string)
 		content, _ := p.Args["content"].(string)
 

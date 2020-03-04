@@ -12,8 +12,8 @@ const httpLink = new HttpLink({
 const middlewareLink = new ApolloLink((operation, forward) => {
     operation.setContext({
       headers: {
-        'token': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwicGFzc3dvcmQiOiIxMjM0IiwiZXhwIjoxNTgzNDk5OTE1LCJpc3MiOiJkZW1vIn0.5tXTOiLHTlRM1Uf7WHpTNyA1BaClaDz3QnfYJsHauF',
-        // 'token': sessionStorage.getItem('token') || ${token} || null
+        // 'token': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwicGFzc3dvcmQiOiIxMjM0IiwiZXhwIjoxNTgzNjcwMTQyLCJpc3MiOiJkZW1vIn0.5wI_UkMJvoAk5_X_hOrWdGRByadHMnJdAnq0ShXBSOQ',
+        'token': localStorage.getItem('token') || null
       }
     })  //request拦截器
   
