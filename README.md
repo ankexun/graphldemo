@@ -8,4 +8,4 @@ GraphQL demo
 4. 纯graphql做的登录功能,注意必须输入部分在apllo里的写法
 5. 优化了schema的命名
 
-[使用文档](https://yq.aliyun.com/articles/746459?spm=a2c4e.11155435.0.0.73dd3312vyncuW)
+[使用文档](https://okrs.gitee.io/blog/)
